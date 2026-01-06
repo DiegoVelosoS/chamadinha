@@ -51,4 +51,4 @@ Comparação (Distância Euclidiana): O vetor do rosto atual é comparado matema
 Se a "distância" for menor que 1.1, o sistema considera um "Match".
 Fuzzy Matching (Texto): Ao inserir um nome manual, o algoritmo Levenshtein calcula a porcentagem de semelhança com nomes existentes (ex: Gabirel é 95% similar a Gabriel) para sugerir correções.
 
-Dev Diego Veloso - 2025 como exercício pessoal
+Dev Diego Veloso - 06/01/2026 como exercício pessoal
