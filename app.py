@@ -241,7 +241,7 @@ if st.session_state['processamento_iniciado']:
         st.download_button("Baixar Relatório .txt", texto_completo, file_name=f"chamada_{data_atual}.txt")
         
         # Botão para Reiniciar
- if st.button("Começar Nova Chamada"):
+        if st.button("Começar Nova Chamada"):
             # AUMENTA O CONTADOR PARA FORÇAR LIMPEZA DO UPLOAD
             st.session_state['uploader_key'] += 1
             
