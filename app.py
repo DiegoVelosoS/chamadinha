@@ -6,11 +6,18 @@ import os
 import insightface
 from insightface.app import FaceAnalysis
 from thefuzz import process
-from PIL import Image
+from datetime import date
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="Chamadinha AI", layout="centered")
-st.title("🥋 Chamadinha - Reconhecimento Facial")
+st.title("Chamadinha - Reconhecimento Facial")
+
+st.markdown("""
+**Protótipo para chamadas usando apenas uma foto.**
+O sistema é um protótipo para teste da IA que identifica os alunos e corrige os nomes automaticamente.
+Ele também **"aprende os rostos"**: quanto mais você usa, menos precisa digitar nas próximas aulas.
+É só enviar a foto e baixar a lista.
+""")
 
 # --- CAMINHOS E ARQUIVOS ---
 DB_FILE = 'banco_rostos.pkl'
@@ -63,6 +70,10 @@ def verificar_nome_parecido(nome_digitado, banco_dados):
 if 'banco_dados' not in st.session_state:
     st.session_state['banco_dados'] = carregar_banco_dados()
 
+# CRIA UM CONTADOR PARA O UPLOAD
+if 'uploader_key' not in st.session_state:
+    st.session_state['uploader_key'] = 0
+
 if 'processamento_iniciado' not in st.session_state:
     st.session_state['processamento_iniciado'] = False
     st.session_state['rostos_detectados'] = []
@@ -83,8 +94,19 @@ with st.sidebar:
         st.session_state['banco_dados'] = []
         st.rerun()
 
-# 2. Upload da Imagem
-uploaded_file = st.file_uploader("Faça upload da foto da turma", type=['jpg', 'png', 'jpeg'])
+# 2. Configurações da Chamada (NOVO)
+st.subheader("Dados da Aula")
+col_data, col_turma = st.columns(2)
+with col_data:
+    data_atual = st.date_input("Data", value=date.today())
+with col_turma:
+    turma_nome = st.text_input("Turma / Horário", placeholder="Ex: Turma das 20h")
+
+st.divider()
+
+# 3. Upload da Imagem
+# ADICIONA A KEY DINÂMICA
+uploaded_file = st.file_uploader("Faça upload da foto da turma", type=['jpg', 'png', 'jpeg'], key=f"uploader_{st.session_state['uploader_key']}")
 
 if uploaded_file is not None:
     # Processar a imagem apenas se mudou ou se é a primeira vez
@@ -108,7 +130,7 @@ if uploaded_file is not None:
             st.session_state['processamento_iniciado'] = True
             st.rerun()
 
-# 3. Fluxo de Chamada (Um por um)
+# 4. Fluxo de Chamada (Um por um)
 if st.session_state['processamento_iniciado']:
     idx = st.session_state['indice_atual']
     total_rostos = len(st.session_state['rostos_detectados'])
@@ -164,7 +186,6 @@ if st.session_state['processamento_iniciado']:
                             # Verifica Typos
                             typo_match = verificar_nome_parecido(novo_nome_input, st.session_state['banco_dados'])
                             if typo_match:
-                                # Aqui simplificamos: se parece muito, assumimos que é (em app real poderia ter outro popup)
                                 st.toast(f"Corrigido de '{novo_nome_input}' para '{typo_match}'")
                                 nome_final = typo_match
                             else:
@@ -183,10 +204,10 @@ if st.session_state['processamento_iniciado']:
                     st.session_state['indice_atual'] += 1
                     st.rerun()
 
-    # 4. Fim do Processo - Relatório
+    # 5. Fim do Processo - Relatório
     else:
-        st.success("Chamada Finalizada!")
-        st.balloons()
+        st.success("Chamada Finalizada com Sucesso!")
+        # EFEITO DE BALÕES REMOVIDO AQUI
         
         lista_presentes = st.session_state['chamada_final']
         
@@ -200,16 +221,32 @@ if st.session_state['processamento_iniciado']:
             
         st.image(img_final, caption="Turma Identificada", use_column_width=True)
         
-        # Tabela e Download
-        st.write("### Lista de Presença")
-        st.write(lista_presentes)
+        # EXIBIÇÃO FORMATADA DA LISTA
+        st.markdown("---")
+        st.subheader(f"Resumo: {turma_nome} ({data_atual})")
+        st.markdown(f"**Total de Presentes:** {len(lista_presentes)}")
         
-        texto_relatorio = "Lista de Presença:\n" + "\n".join(lista_presentes)
-        st.download_button("Baixar Relatório .txt", texto_relatorio, file_name="chamada.txt")
+        st.write("### Nomes:")
+        # Exibe em formato de lista limpa
+        for nome_aluno in lista_presentes:
+            st.markdown(f"- {nome_aluno}")
+            
+        st.markdown("---")
         
-        if st.button("Começar Nova Chamada"):
-            # Resetar variáveis da sessão, mas manter o banco de dados
+        # Preparar texto para download
+        texto_cabecalho = f"DATA: {data_atual}\nTURMA: {turma_nome}\nTOTAL: {len(lista_presentes)}\n\n"
+        texto_nomes = "LISTA DE PRESENÇA:\n" + "\n".join(lista_presentes)
+        texto_completo = texto_cabecalho + texto_nomes
+        
+        st.download_button("Baixar Relatório .txt", texto_completo, file_name=f"chamada_{data_atual}.txt")
+        
+        # Botão para Reiniciar
+ if st.button("Começar Nova Chamada"):
+            # AUMENTA O CONTADOR PARA FORÇAR LIMPEZA DO UPLOAD
+            st.session_state['uploader_key'] += 1
+            
             keys_to_reset = ['processamento_iniciado', 'rostos_detectados', 'imagem_original', 'indice_atual', 'chamada_final']
             for key in keys_to_reset:
-                del st.session_state[key]
+                if key in st.session_state:
+                    del st.session_state[key]
             st.rerun()
