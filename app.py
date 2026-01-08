@@ -55,7 +55,7 @@ def buscar_melhor_match(novo_embedding, banco_dados, threshold=1.1):
             
     if menor_distancia < threshold:
         return melhor_nome, menor_distancia
-    return None, 0.0
+    return None, None
 
 def verificar_nome_parecido(nome_digitado, banco_dados):
     nomes_conhecidos = list(set([p['nome'] for p in banco_dados]))
@@ -120,6 +120,10 @@ if uploaded_file is not None:
             # Detectar
             app = carregar_modelo()
             rostos = app.get(img)
+            if not rostos:
+                st.warning("Nenhum rosto detectado na imagem.")
+                st.session_state['processamento_iniciado'] = False
+                st.rerun()
             
             # Ordenar rostos da esquerda para a direita (facilita a chamada)
             rostos.sort(key=lambda x: x.bbox[0])
@@ -141,7 +145,8 @@ if st.session_state['processamento_iniciado']:
         rosto_atual = st.session_state['rostos_detectados'][idx]
         
         # Barra de progresso
-        st.progress((idx) / total_rostos, text=f"Identificando aluno {idx+1} de {total_rostos}")
+        st.progress((idx + 1) / total_rostos)
+        st.caption(f"Identificando aluno {idx+1} de {total_rostos}")
         
         col1, col2 = st.columns([1, 2])
         
@@ -186,7 +191,7 @@ if st.session_state['processamento_iniciado']:
                             # Verifica Typos
                             typo_match = verificar_nome_parecido(novo_nome_input, st.session_state['banco_dados'])
                             if typo_match:
-                                st.toast(f"Corrigido de '{novo_nome_input}' para '{typo_match}'")
+                                st.success(f"Corrigido de '{novo_nome_input}' para '{typo_match}'")
                                 nome_final = typo_match
                             else:
                                 nome_final = novo_nome_input

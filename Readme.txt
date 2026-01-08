@@ -1,41 +1,25 @@
-Chamadinha
-Sistema de reconhecimento facial para automatizar a lista de presença em aulas através de fotos da turma.
+## CHAMADINHA - Reconhecimento Facial
+Protótipo para controle de presença por foto, usando IA para identificar rostos, corrigir nomes digitados e um banco de dados que aprende com o tempo.
 
-/content/drive/MyDrive/.../Chamadinha/
-│
-├── banco_rostos.pkl        # O "Cérebro" do sistema (NÃO APAGAR)
-├── Chamadinha.ipynb        # O código fonte (Notebook)
-└── Relatorios/             # (Gerados após cada execução)
-    └── Chamada_DD-MM-AAAA_Turma.txt
+Funcionalidade:
+- Detecta rostos na foto (insightface).
+- Sugere nomes com base no histórico; corrige nomes similares usando `thefuzz`.
+- Mantém um arquivo `banco_rostos.pkl` com a "memória" dos rostos (não apague este arquivo).
+- Gera relatório em texto com a lista de presentes.
 
+Estrutura (exemplo):
+    banco_rostos.pkl        # banco de dados local (pickle)
+    app.py                  # aplicação Streamlit
+    Relatorios/             # (a implementar)
 
-🚀 O que ele faz
-Identifica rostos na foto (usando IA RetinaFace).
+Como usar (resumo):
+1. Instale dependências (ver `requirements.txt`).
+2. Rode: `streamlit run app.py`.
+3. Faça upload da foto da turma.
+4. Para cada rosto, confirme ou corrija o nome (o sistema sugere nomes baseado no histórico).
+5. Baixe o relatório final em .txt.
 
-Aprende com o tempo: Sugere nomes automaticamente baseados em aulas anteriores.
-
-Salva tudo no seu Google Drive (não perde os dados).
-
-Gera Relatório em texto com a lista de presentes.
-
-
-⚙️ Como Usar (Passo a Passo)
-Instalação (Célula 1): Execute uma vez para baixar as bibliotecas.
-
-Conexão (Célula 2): Conecte ao Google Drive para carregar o banco de dados.
-
-Upload (Célula 3 e 4): Envie a foto da turma.
-
-Chamada (Célula 5):
-
-O sistema vai destacar um rosto.
-
-Se reconhecer, pergutará: "É o Fulano?" (Responda s ou n).
-
-Se não, digite o nome.
-
-Relatório (Célula 6): Digite o nome da turma para gerar a lista final.
-
-
-⚠️ Importante
-O arquivo banco_rostos.pkl criado no seu Drive contém a "memória" da IA. Não apague esse arquivo, ou o sistema terá que aprender todos os rostos do zero novamente.
+Observações:
+- O `app.py` salva o `banco_rostos.pkl` localmente por padrão; se você quiser salvar no Google Drive, monte o Drive antes de iniciar o app ou ajuste `DB_FILE` para o caminho do Drive.
+- O protótipo melhora sua performance com o uso contínuo (mais exemplos = melhores sugestões).
+- Se o projeto mencionar ferramentas não utilizadas no código (ex.: DeepFace), revise para evitar confusão..
