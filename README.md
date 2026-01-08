@@ -1,8 +1,8 @@
-# CHAMADINHA - Reconhecimento Facial ✅
+# CHAMADINHA - Reconhecimento Facial
 
 Protótipo para controle de presença por foto, usando IA para identificar rostos, corrigir nomes digitados e um banco de dados que aprende com o tempo.
 
-## 🔍 Funcionalidades
+## Funcionalidades
 
 - Detecta rostos na foto usando **insightface**.
 - Sugere nomes com base no histórico e corrige nomes semelhantes com **thefuzz**.
@@ -11,7 +11,7 @@ Protótipo para controle de presença por foto, usando IA para identificar rosto
 
 ---
 
-## 🗂️ Estrutura do Projeto (exemplo)
+## Estrutura do Projeto (exemplo)
 
 ```
 banco_rostos.pkl        # banco de dados local (pickle)
@@ -24,7 +24,7 @@ requirements.txt        # dependências do projeto
 
 ---
 
-## ⚙️ Como usar (rápido)
+## Como usar (rápido)
 
 1. Instale as dependências:
 
@@ -43,7 +43,7 @@ streamlit run app.py
 
 ---
 
-## 📌 Observações importantes
+## Observações importantes
 
 - Por padrão, o `app.py` salva `banco_rostos.pkl` **localmente**. Se preferir salvar no Google Drive, monte o Drive antes de iniciar o app ou ajuste o valor de `DB_FILE` no `app.py` para o caminho desejado.
 
@@ -54,7 +54,7 @@ streamlit run app.py
 
 ---
 
-## 💡 Dica
+## Dica
 
 - Quanto mais você usar, melhor o sistema aprende (mais exemplos = melhores sugestões).
 
